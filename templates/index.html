@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Planner</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .header {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="header d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fa-solid fa-book"></i> Study Planner</h3>
+        <div>
+            <span class="me-3">👋 {{ session['user_name'] }}</span>
+            <a href="/logout" class="btn btn-light btn-sm">Logout</a>
+        </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card p-3 text-center">
+                <h6>Total Study Hours</h6>
+                <h2>{{ total_hours }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-3 text-center">
+                <h6>Most Studied Subject</h6>
+                <h2>{{ most_studied }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMART PLAN -->
+    <div class="card p-3 mb-4">
+        <h5><i class="fa-solid fa-chart-line"></i> Smart Study Plan</h5>
+
+        {% if study_plan %}
+            <ul class="list-group mt-2">
+                {% for sub, hrs, status in study_plan %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>📘 {{ sub }}</span>
+                        <span>
+                            <b>{{ hrs }} hrs</b> —
+                            {% if "Focus" in status %}
+                                <span class="text-danger">{{ status }}</span>
+                            {% else %}
+                                <span class="text-success">{{ status }}</span>
+                            {% endif %}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted text-center">No study data yet 🚀</p>
+        {% endif %}
+    </div>
+
+    <!-- SUBJECT PROGRESS -->
+    <div class="card p-3 mb-4">
+        <h5><i class="fa-solid fa-chart-bar"></i> Subject Progress</h5>
+
+        {% if study_plan %}
+            {% for sub, hrs, status in study_plan %}
+
+                {% set width = hrs * 30 %}
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ sub }}</span>
+                        <span>{{ hrs }} hrs</span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar 
+                            {% if "Focus" in status %} bg-danger
+                            {% else %} bg-success {% endif %}"
+                            style="width: {{ width }}%;">
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- ADD SECTION -->
+    <div class="row">
+
+        <!-- ADD SUBJECT -->
+        <div class="col-md-4">
+            <div class="card p-3 mb-3">
+                <h6>Add Subject</h6>
+                <form action="/add_subject" method="POST">
+                    <input type="text" name="subject_name" class="form-control mb-2" placeholder="Enter subject" required>
+                    <button class="btn btn-primary w-100 shadow">Add</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADD SESSION -->
+        <div class="col-md-8">
+            <div class="card p-3 mb-3">
+                <h6>Add Study Session</h6>
+
+                <form action="/add_session" method="POST">
+
+                    <select name="subject_id" class="form-control mb-2">
+                        {% for sub in subjects %}
+                            <option value="{{ sub[0] }}">{{ sub[1] }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="date" name="study_date" class="form-control mb-2" required>
+
+                    <input type="number" name="duration_hours" class="form-control mb-2" placeholder="Hours" required>
+
+                    <button class="btn btn-success w-100 shadow">Add Session</button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="card p-3">
+        <h5><i class="fa-solid fa-table"></i> Study Sessions</h5>
+
+        <table class="table table-hover mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Hours</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for s in sessions %}
+                <tr>
+                    <td>{{ s[0] }}</td>
+                    <td>{{ s[1] }}</td>
+                    <td>{{ s[2] }}</td>
+                    <td>{{ s[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
