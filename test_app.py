@@ -1,11 +1,15 @@
 import unittest
+from unittest.mock import patch
 from app import app
 
 class TestStudyPlanner(unittest.TestCase):
-    def setUp(self):
+    @patch('app.conn')
+    def setUp(self, mock_conn):
         app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False
         self.app = app.test_client()
+        mock_cursor = mock_conn.cursor.return_value
+        mock_cursor.fetchall.return_value = []
+        mock_cursor.fetchone.return_value = (0,)
 
     def test_home_page(self):
         response = self.app.get('/')
