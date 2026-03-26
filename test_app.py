@@ -1,15 +1,22 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
+import pytest
 from app import app
 
+# Patch conn globally for ALL tests
+@pytest.fixture(autouse=True)
+def mock_db(monkeypatch):
+    mock_conn = Mock()
+    mock_cursor = Mock()
+    mock_cursor.fetchall.return_value = []
+    mock_cursor.fetchone.return_value = (0,)
+    mock_conn.cursor.return_value = mock_cursor
+    monkeypatch.setattr('app.conn', mock_conn)
+
 class TestStudyPlanner(unittest.TestCase):
-    @patch('app.conn')
-    def setUp(self, mock_conn):
+    def setUp(self):
         app.config['TESTING'] = True
         self.app = app.test_client()
-        mock_cursor = mock_conn.cursor.return_value
-        mock_cursor.fetchall.return_value = []
-        mock_cursor.fetchone.return_value = (0,)
 
     def test_home_page(self):
         response = self.app.get('/')

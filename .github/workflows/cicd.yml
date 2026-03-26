@@ -4,38 +4,13 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: study_planner
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: lakshmi
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
     steps:
-    - uses: actions/checkout@v4    # Updated to v4 (Node 24)
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v5  # Updated to v5 (Node 24)
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
-    - name: Wait for Postgres
-      run: |
-        for i in {1..30}; do
-          if pg_isready -h localhost -p 5432; then
-            echo "Postgres ready!"
-            break
-          fi
-          sleep 2
-        done || true
     
     - name: Install dependencies
       run: |
