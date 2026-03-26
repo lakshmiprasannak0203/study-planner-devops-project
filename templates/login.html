@@ -1,95 +1,462 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Login - Study Planner</title>
 
-<title>Login | Study Planner</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-body{
-    background: linear-gradient(135deg,#4facfe,#00f2fe);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Arial;
-}
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
 
-.login-card{
-    width:400px;
-    border-radius:15px;
-    padding:30px;
-    background:white;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
-}
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px 30px;
+            animation: slideUp 0.5s ease-out;
+        }
 
-.login-title{
-    text-align:center;
-    margin-bottom:25px;
-}
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.login-title i{
-    font-size:40px;
-    color:#4facfe;
-}
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-.form-control{
-    border-radius:10px;
-}
+        .login-header .logo {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
 
-.btn-login{
-    border-radius:10px;
-}
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
 
-.register-link{
-    text-align:center;
-    margin-top:15px;
-}
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
 
-</style>
+        .form-group {
+            margin-bottom: 20px;
+        }
 
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon .form-control {
+            padding-left: 40px;
+        }
+
+        .input-icon .icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .show-password-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #667eea;
+            padding: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .show-password-btn:hover {
+            color: #764ba2;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .register-link p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .register-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .features {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .feature-item {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .feature-item i {
+            font-size: 20px;
+            color: #667eea;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+
+            .form-label {
+                font-size: 13px;
+            }
+
+            .form-control {
+                padding: 10px 12px;
+                padding-left: 35px;
+                font-size: 13px;
+            }
+
+            .btn-login {
+                padding: 10px;
+                font-size: 14px;
+                margin-top: 20px;
+            }
+
+            .features {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="login-card">
-
-    <div class="login-title">
-        <i class="fa-solid fa-book"></i>
-        <h3>Study Planner</h3>
-        <p class="text-muted">Login to your account</p>
-    </div>
-
-    <form method="POST">
-
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+<div class="login-container">
+    <div class="login-card">
+        
+        <!-- HEADER -->
+        <div class="login-header">
+            <div class="logo">
+                <i class="fa-solid fa-book"></i>
+            </div>
+            <h1>Study Planner</h1>
+            <p>Welcome back! Login to continue</p>
         </div>
 
-        <div class="mb-3">
-            <label>Password</label>
-            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+        <!-- FORM -->
+        <form method="POST" onsubmit="return validateLoginForm()">
+            
+            <!-- EMAIL FIELD -->
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <div class="input-icon">
+                    <i class="fas fa-envelope icon"></i>
+                    <input 
+                        type="email" 
+                        class="form-control" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <!-- PASSWORD FIELD -->
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-icon" style="position: relative;">
+                    <i class="fas fa-lock icon"></i>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                    <button type="button" class="show-password-btn" onclick="toggleLoginPasswordVisibility()" style="position: absolute;">
+                        <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <!-- REMEMBER ME & FORGOT PASSWORD -->
+            <div class="forgot-password">
+                <a href="#" onclick="alert('Password reset feature coming soon!'); return false;">
+                    <i class="fas fa-question-circle"></i> Forgot password?
+                </a>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe" name="remember">
+                <label for="rememberMe" style="margin: 0; cursor: pointer;">Remember me</label>
+            </div>
+
+            <!-- LOGIN BUTTON -->
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+
+        <!-- REGISTER LINK -->
+        <div class="register-link">
+            <p>Don't have an account?</p>
+            <a href="/register">
+                <i class="fas fa-user-plus"></i> Create one now
+            </a>
         </div>
 
-        <button class="btn btn-primary w-100 btn-login">
-            <i class="fa-solid fa-right-to-bracket"></i> Login
-        </button>
-
-    </form>
-
-    <div class="register-link">
-        <p>Don't have an account?</p>
-        <a href="/register" class="btn btn-outline-primary btn-sm">Register</a>
+        <!-- FEATURES -->
+        <div class="features">
+            <div class="feature-item">
+                <i class="fas fa-fire"></i>
+                <div>Streak Tracking</div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-hourglass"></i>
+                <div>Pomodoro Timer</div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-chart-bar"></i>
+                <div>Analytics</div>
+            </div>
+        </div>
     </div>
-
 </div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // Toggle password visibility
+    function toggleLoginPasswordVisibility() {
+        const field = document.getElementById('password');
+        const icon = document.getElementById('passwordToggleIcon');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Validate login form
+    function validateLoginForm() {
+        let isValid = true;
+
+        const email = document.getElementById('email').value.trim();
+        const emailError = document.getElementById('emailError');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            emailError.textContent = '✗ Please enter a valid email address';
+            emailError.style.display = 'block';
+            isValid = false;
+        } else {
+            emailError.style.display = 'none';
+        }
+
+        const password = document.getElementById('password').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (password.length === 0) {
+            passwordError.textContent = '✗ Password is required';
+            passwordError.style.display = 'block';
+            isValid = false;
+        } else if (password.length < 6) {
+            passwordError.textContent = '✗ Password is incorrect';
+            passwordError.style.display = 'block';
+            isValid = false;
+        } else {
+            passwordError.style.display = 'none';
+        }
+
+        return isValid;
+    }
+</script>
 
 </body>
 </html>

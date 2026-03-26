@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pomodoro Study Timer</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .timer-display {
+            font-size: 80px;
+            font-weight: bold;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 10px;
+        }
+
+        .timer-label {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status-study {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .status-break {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-idle {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-control {
+            margin: 10px 5px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-control:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-start {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        .btn-start:hover {
+            background-color: #218838;
+            color: white;
+        }
+
+        .btn-pause {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+        }
+
+        .btn-pause:hover {
+            background-color: #e0a800;
+            color: #333;
+        }
+
+        .btn-reset {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .btn-reset:hover {
+            background-color: #c82333;
+            color: white;
+        }
+
+        .btn-skip {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+        }
+
+        .btn-skip:hover {
+            background-color: #138496;
+            color: white;
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+            margin-bottom: 20px;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            stroke-dasharray: 565;
+            stroke-dashoffset: 0;
+        }
+
+        .stats {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .motivation {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #e8f0ff;
+        }
+
+        .sound-toggle {
+            background: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #667eea;
+            transition: 0.3s;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .timer-container {
+                padding: 25px;
+                margin-top: 60px;
+            }
+
+            .timer-display {
+                font-size: 60px;
+                letter-spacing: 5px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .controls {
+                gap: 5px;
+            }
+
+            .btn-control {
+                margin: 5px 2px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification-success {
+            border-left: 4px solid #28a745;
+            color: #28a745;
+        }
+
+        .notification-info {
+            border-left: 4px solid #17a2b8;
+            color: #17a2b8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <a href="/" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        <i class="fa-solid fa-volume-up"></i> Sound: ON
+    </button>
+</div>
+
+<div class="timer-container">
+
+    <!-- TITLE -->
+    <h1><i class="fa-solid fa-hourglass-end text-danger"></i> Pomodoro Study Timer</h1>
+
+    <!-- STATUS -->
+    <div class="status-badge" id="statusBadge">Ready to Start</div>
+
+    <!-- TIMER DISPLAY -->
+    <div class="timer-display" id="timerDisplay">25:00</div>
+
+    <!-- SESSION INFO -->
+    <div class="timer-label" id="sessionLabel">Focus Time - Study Session</div>
+
+    <!-- MOTIVATION -->
+    <div class="motivation" id="motivation">Click Start to begin your focused study session!</div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <button class="btn-control btn-start" id="startBtn" onclick="startTimer()">
+            <i class="fa-solid fa-play"></i> Start
+        </button>
+        <button class="btn-control btn-pause" id="pauseBtn" onclick="pauseTimer()" style="display: none;">
+            <i class="fa-solid fa-pause"></i> Pause
+        </button>
+        <button class="btn-control btn-reset" id="resetBtn" onclick="resetTimer()">
+            <i class="fa-solid fa-undo"></i> Reset
+        </button>
+        <button class="btn-control btn-skip" id="skipBtn" onclick="skipSession()">
+            <i class="fa-solid fa-forward"></i> Skip
+        </button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-item">
+            <span class="stat-label"><i class="fa-solid fa-check-circle text-success"></i> Completed Pomodoros:</span>
+            <span class="stat-value" id="completedPomodoros">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label"><i class="fa-solid fa-clock text-info"></i> Total Study Time:</span>
+            <span class="stat-value" id="totalStudyTime">0m</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label"><i class="fa-solid fa-fire text-warning"></i> Session Type:</span>
+            <span class="stat-value" id="sessionType">Study</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<!-- AUDIO ELEMENT FOR NOTIFICATION SOUND -->
+<audio id="notificationSound">
+    <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+</audio>
+
+<script>
+    // ========== TIMER CONFIGURATION ==========
+    const STUDY_TIME = 25 * 60; // 25 minutes in seconds
+    const BREAK_TIME = 5 * 60;  // 5 minutes in seconds
+    
+    // ========== STATE VARIABLES ==========
+    let timerInterval = null;
+    let timeRemaining = STUDY_TIME;
+    let isRunning = false;
+    let isStudySession = true; // true = study, false = break
+    let completedPomodoros = 0;
+    let totalStudySeconds = 0;
+    let soundEnabled = true;
+    
+    // ========== TIMER FUNCTIONS ==========
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    
+    function updateDisplay() {
+        document.getElementById('timerDisplay').textContent = formatTime(timeRemaining);
+        
+        // Update progress indicator
+        let totalTime = isStudySession ? STUDY_TIME : BREAK_TIME;
+        let progress = ((totalTime - timeRemaining) / totalTime) * 100;
+        
+        // Change color based on time remaining
+        let timerElement = document.getElementById('timerDisplay');
+        if (timeRemaining <= 60) {
+            timerElement.style.color = '#dc3545'; // Red when < 1 min
+        } else if (timeRemaining <= 300) {
+            timerElement.style.color = '#ffc107'; // Yellow when < 5 min
+        } else {
+            timerElement.style.color = '#667eea'; // Blue otherwise
+        }
+    }
+    
+    function updateStats() {
+        document.getElementById('completedPomodoros').textContent = completedPomodoros;
+        const minutes = Math.floor(totalStudySeconds / 60);
+        const seconds = totalStudySeconds % 60;
+        if (minutes === 0) {
+            document.getElementById('totalStudyTime').textContent = seconds + 's';
+        } else {
+            document.getElementById('totalStudyTime').textContent = minutes + 'm ' + seconds + 's';
+        }
+        document.getElementById('sessionType').textContent = isStudySession ? 'Study' : 'Break';
+    }
+    
+    function playNotificationSound() {
+        if (soundEnabled) {
+            try {
+                // Create a beep sound using Web Audio API
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = isStudySession ? 800 : 400; // Different tones
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio not available');
+            }
+        }
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification show notification-${type}`;
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+    
+    function sessionComplete() {
+        playNotificationSound();
+        
+        if (isStudySession) {
+            completedPomodoros++;
+            totalStudySeconds += STUDY_TIME;
+            showNotification('🎉 Great work! Time for a break!', 'success');
+            document.getElementById('sessionLabel').textContent = 'Break Time - Recharge!';
+            document.getElementById('statusBadge').textContent = 'Break Time';
+            document.getElementById('statusBadge').className = 'status-badge status-break';
+            document.getElementById('motivation').textContent = 'Stretch, grab water, and relax before your next session!';
+        } else {
+            showNotification('✨ Break over! Ready for another session?', 'success');
+            document.getElementById('sessionLabel').textContent = 'Focus Time - Study Session';
+            document.getElementById('statusBadge').textContent = 'Ready to Study';
+            document.getElementById('statusBadge').className = 'status-badge status-study';
+            document.getElementById('motivation').textContent = 'Another 25 minutes of focused study time!';
+        }
+        
+        isStudySession = !isStudySession;
+        timeRemaining = isStudySession ? STUDY_TIME : BREAK_TIME;
+        updateDisplay();
+        updateStats();
+        pauseTimer();
+    }
+    
+    function startTimer() {
+        if (isRunning) return;
+        
+        isRunning = true;
+        document.getElementById('startBtn').style.display = 'none';
+        document.getElementById('pauseBtn').style.display = 'inline-block';
+        
+        // Update status badge
+        if (isStudySession) {
+            document.getElementById('statusBadge').textContent = 'Studying...';
+            document.getElementById('statusBadge').className = 'status-badge status-study';
+        } else {
+            document.getElementById('statusBadge').textContent = 'On Break...';
+            document.getElementById('statusBadge').className = 'status-badge status-break';
+        }
+        
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateDisplay();
+            updateStats();
+            
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                sessionComplete();
+            }
+        }, 1000);
+    }
+    
+    function pauseTimer() {
+        isRunning = false;
+        clearInterval(timerInterval);
+        document.getElementById('startBtn').style.display = 'inline-block';
+        document.getElementById('pauseBtn').style.display = 'none';
+        
+        document.getElementById('statusBadge').textContent = 'Paused';
+        document.getElementById('statusBadge').className = 'status-badge status-idle';
+    }
+    
+    function resetTimer() {
+        pauseTimer();
+        timeRemaining = isStudySession ? STUDY_TIME : BREAK_TIME;
+        updateDisplay();
+        
+        document.getElementById('statusBadge').textContent = 'Ready to Start';
+        document.getElementById('statusBadge').className = 'status-badge status-idle';
+        
+        showNotification('⟲ Timer reset!', 'info');
+    }
+    
+    function skipSession() {
+        pauseTimer();
+        
+        if (isStudySession) {
+            showNotification('⏭️ Skipped study session. Time for a break!', 'info');
+        } else {
+            showNotification('⏭️ Skipped break. Ready to study?', 'info');
+        }
+        
+        sessionComplete();
+    }
+    
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const btn = document.getElementById('soundToggle');
+        if (soundEnabled) {
+            btn.innerHTML = '<i class="fa-solid fa-volume-up"></i> Sound: ON';
+        } else {
+            btn.innerHTML = '<i class="fa-solid fa-volume-mute"></i> Sound: OFF';
+        }
+    }
+    
+    // Initialize display on page load
+    updateDisplay();
+    updateStats();
+</script>
+
+</body>
+</html>
