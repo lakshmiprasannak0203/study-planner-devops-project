@@ -7,18 +7,45 @@ app = Flask(__name__)
 app.secret_key = "secret123"
 
 # ---------------- DATABASE CONNECTION ----------------
-DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_HOST = os.getenv('DB_HOST', 'localhost')  # Use localhost for local development
 DB_NAME = os.getenv('DB_NAME', 'study_planner')
 DB_USER = os.getenv('DB_USER', 'postgres')
 DB_PASS = os.getenv('DB_PASS', 'lakshmi')
 
-conn = psycopg2.connect(
-    host=DB_HOST,
-    database=DB_NAME,
-    user=DB_USER,
-    password=DB_PASS,
-    port="5432"
-)
+# Lazy database connection - only connects when needed
+_conn = None
+
+def get_db_connection():
+    """Get or create database connection"""
+    global _conn
+    if _conn is None:
+        _conn = psycopg2.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS,
+            port="5432"
+        )
+    return _conn
+
+# For backward compatibility, create a property-like access
+class ConnectionProxy:
+    def cursor(self):
+        return get_db_connection().cursor()
+    
+    def commit(self):
+        return get_db_connection().commit()
+    
+    def rollback(self):
+        return get_db_connection().rollback()
+    
+    def close(self):
+        global _conn
+        if _conn is not None:
+            _conn.close()
+            _conn = None
+
+conn = ConnectionProxy()
 
 # -------- CALCULATE STUDY STREAK --------
 def calculate_study_streak(user_id):
@@ -416,4 +443,4 @@ def pomodoro():
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
 
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
